@@ -1,0 +1,11 @@
+# templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-config
+  namespace: mmbarki
+data:
+  DB_HOST: mongodb-0.mongodb-service.mmbarki.svc.cluster.local
+  MONGO_PORT: "27017"
+  DB_USER: root
+  DB_PASSWORD: example

@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webdb
+  namespace: mmbarki
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: webdb
+  template:
+    metadata:
+      labels:
+        app: webdb
+    spec:
+      containers:
+      - name: webdb
+        image: mark00bi/webdb:v5
+        ports:
+        - containerPort: 5000
+        resources:
+          requests:
+            cpu: "100m"      
+            memory: "100Mi" 
+          limits:
+            cpu: "200m"     
+            memory: "200Mi" 
+        env:
+        - name: MONGO_URL
+          value: "mongodb://root:example@mongodb-service:27017"
+        - name: MONGO_DB_NAME
+          value: "flask_app_db"
+        - name: MONGO_COLLECTION_NAME
+          value: "requests"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          failureThreshold: 3  
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webdb-service
+  namespace: mmbarki
+spec:
+  selector:
+    app: webdb
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 5000
+  type: ClusterIP

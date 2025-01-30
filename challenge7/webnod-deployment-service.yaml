@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webnodb
+  namespace: mmbarki    
+spec:
+  replicas: 1            
+  selector:
+    matchLabels:
+      app: webnodb
+  template:
+    metadata:
+      labels:
+        app: webnodb
+    spec:
+      containers:
+      - name: webnodb
+        image: mark00bi/myflaskapp:v2
+        ports:
+        - containerPort: 5000
+        resources:
+          requests:
+            cpu: "100m"      # 1/10 CPU per pod
+            memory: "100Mi"  # 100 Mo per pod
+          limits:
+            cpu: "200m"      # 1/5 CPU per pod
+            memory: "200Mi"  # 200 Mo per pod
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webnodb-service
+  namespace: mmbarki    
+spec:
+  selector:
+    app: webnodb
+  ports:
+  - protocol: TCP
+    port: 80             
+    targetPort: 5000     # Port where container listens
+  type: ClusterIP

@@ -1,0 +1,42 @@
+from flask import Flask, request
+from pymongo import MongoClient
+import os
+import socket
+
+app = Flask(__name__)
+
+MONGO_HOST = os.environ.get("MONGO_HOST", "localhost")
+MONGO_PORT = int(os.environ.get("MONGO_PORT", 27017))
+MONGO_USER = os.environ.get("MONGO_USER", "root")
+MONGO_PASS = os.environ.get("MONGO_PASS", "example")
+MONGO_DB   = os.environ.get("MONGO_DB", "mydatabase")
+
+@app.route("/")
+def index():
+    hostname = socket.gethostname()
+
+    # Connect to MongoDB
+    client = MongoClient(
+        host=MONGO_HOST,
+        port=MONGO_PORT,
+        username=MONGO_USER,
+        password=MONGO_PASS
+    )
+    db = client[MONGO_DB]
+    collection = db["requests"]
+
+    # Record a small doc: IP + hostname
+    record = {
+        "ip": request.remote_addr,
+        "hostname": hostname
+    }
+    collection.insert_one(record)
+
+    # Count documents
+    count = collection.count_documents({})
+
+    return f"<h2>Flask With DB - app2, DB Records: {count}</h2>"
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
+

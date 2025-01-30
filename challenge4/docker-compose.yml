@@ -1,0 +1,51 @@
+networks:
+  my_network:
+    driver: bridge
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - "27017:27017"
+    networks:
+      - my_network
+
+  app1:
+    build: ./app1
+    container_name: app1
+    ports:
+      - "5001:5000"
+    networks:
+      - my_network
+
+  app2:
+    build: ./app2
+    container_name: app2
+    ports:
+      - "5002:5000"
+    networks:
+      - my_network
+    depends_on:
+      - mongodb    # only if app2 needs MongoDB
+    environment:
+      MONGO_HOST: mongodb
+      MONGO_PORT: 27017
+      MONGO_USER: root
+      MONGO_PASS: example
+      MONGO_DB: mydatabase
+
+  nginx:
+    build: ./nginx
+    container_name: load_balancer
+    ports:
+      - "8080:80"
+    depends_on:
+      - app1
+      - app2
+    networks:
+      - my_network
+
