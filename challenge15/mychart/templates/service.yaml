@@ -1,0 +1,42 @@
+# templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: webdb-service
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: webdb
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: {{ .Values.ports.webdb }}
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-service
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: mongodb
+  ports:
+  - protocol: TCP
+    port: {{ .Values.ports.mongodb }}
+    targetPort: {{ .Values.ports.mongodb }}
+  clusterIP: None
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webnodb-service
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: webnodb
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: {{ .Values.ports.webnodb }}
+  type: ClusterIP
