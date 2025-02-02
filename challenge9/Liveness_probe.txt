@@ -1,0 +1,9 @@
+MongoDB (Database) → TCP Probe
+MongoDB listens on port 27017 for TCP connections.
+Using a TCP liveness probe ensures that the database is accepting connections. It does not require HTTP-based requests; instead, Kubernetes simply checks if the port is open.
+If MongoDB crashes or becomes unresponsive, the pod will be restarted.
+
+WebDB (Web Server) → HTTP Probe
+WebDB is a Flask-based web application that serves HTTP traffic on port 5000.
+An HTTP liveness probe checks if the application responds with a 200 OK.
+If the HTTP response fails or the web server hangs, Kubernetes will restart the pod.
